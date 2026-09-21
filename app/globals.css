@@ -238,3 +238,187 @@
     grid-template-columns: 1fr;
   }
 }
+
+.site-header {
+  height: 72px;
+  padding: 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid #e5e5e5;
+  background: white;
+}
+
+.site-logo {
+  color: #111;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.site-nav a {
+  color: #111;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+.nav-login,
+.nav-signup {
+  border: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav-login {
+  background: transparent;
+  color: #111;
+}
+
+.nav-signup {
+  padding: 10px 16px;
+
+  border-radius: 8px;
+
+  background: #111;
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    padding: 0 18px;
+  }
+
+  .site-nav {
+    gap: 12px;
+  }
+}
+
+.onboarding-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 24px 100px;
+}
+
+.onboarding-header {
+  margin-bottom: 40px;
+}
+
+.onboarding-header h1 {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.onboarding-header p {
+  line-height: 1.6;
+}
+
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.onboarding-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  font-weight: 600;
+}
+
+.onboarding-form input[type="text"],
+.onboarding-form input[type="email"],
+.onboarding-form select,
+.onboarding-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  font: inherit;
+  font-weight: 400;
+}
+
+.onboarding-form textarea {
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.onboarding-form fieldset {
+  padding: 22px;
+
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.onboarding-form legend {
+  padding: 0 8px;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.onboarding-form fieldset > p {
+  margin-bottom: 16px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.checkbox-grid label {
+  flex-direction: row;
+  align-items: center;
+
+  padding: 10px;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+
+  font-weight: 400;
+}
+
+.onboarding-submit {
+  padding: 14px 20px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #111;
+  color: white;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .form-row,
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+}

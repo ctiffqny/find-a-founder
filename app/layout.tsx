@@ -1,6 +1,14 @@
+import {
+  ClerkProvider,
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +31,44 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClerkProvider>
+          <header className="site-header">
+            <Link href="/" className="site-logo">
+              USC Find-a-Founder
+            </Link>
+
+            <nav className="site-nav">
+              <Show when="signed-in">
+                <Link href="/founders">
+                  Browse Founders
+                </Link>
+
+                <Link href="/profile">
+                  My Profile
+                </Link>
+
+                <UserButton />
+              </Show>
+
+              <Show when="signed-out">
+                <SignInButton mode="modal">
+                  <button className="nav-login">
+                    Log In
+                  </button>
+                </SignInButton>
+
+                <SignUpButton mode="modal">
+                  <button className="nav-signup">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </Show>
+            </nav>
+          </header>
+          {children}
+        </ClerkProvider>
+      </body>
     </html>
   );
 }

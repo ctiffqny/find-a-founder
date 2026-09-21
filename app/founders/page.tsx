@@ -1,22 +1,25 @@
 import { getFounders } from "@/lib/airtable";
 import FounderDirectory from "@/components/FounderDirectory";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function FoundersPage() {
-  const founders = await getFounders();
+    await auth.protect();
 
-  return (
-    <main className="founders-page">
-      <div className="founders-header">
-        <h1>Find a Founder</h1>
+    const founders = await getFounders();
 
-        <p>
-          Discover USC students who are building,
-          exploring ideas, and looking for people to
-          build with.
-        </p>
-      </div>
+    return (
+        <main className="founders-page">
+        <div className="founders-header">
+            <h1>Find a Founder</h1>
 
-      <FounderDirectory founders={founders} />
-    </main>
-  );
+            <p>
+            Discover USC students who are building,
+            exploring ideas, and looking for people to
+            build with.
+            </p>
+        </div>
+
+        <FounderDirectory founders={founders} />
+        </main>
+    );
 }

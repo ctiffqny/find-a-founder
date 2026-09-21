@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 
 import { getFounderById } from "@/lib/airtable";
 
@@ -12,6 +13,8 @@ type FounderProfilePageProps = {
 export default async function FounderProfilePage({
   params,
 }: FounderProfilePageProps) {
+
+  await auth.protect();
   const { id } = await params;
 
   const founder = await getFounderById(id);
@@ -57,7 +60,7 @@ export default async function FounderProfilePage({
           )}
 
           {founder.currentLocation && (
-            <p>📍 {founder.currentLocation}</p>
+            <p>{founder.currentLocation}</p>
           )}
 
           {founder.availability && (
