@@ -74,6 +74,9 @@ function recordToFounder(record: any): Founder {
 
     availability:
       fields["Availability"] || "",
+
+    profileCompleted:
+      fields["Profile Completed"] === true,
   };
 }
 
@@ -295,6 +298,9 @@ export async function createFounder(
           "What I'm Working On": input.workingOn,
 
           Availability: input.availability,
+
+          // User has finished the required onboarding form.
+          "Profile Completed": true,
 
           // New profiles aren't public immediately.
           "Profile Visible": false,

@@ -10,21 +10,38 @@ export default async function OnboardingPage() {
   const existingFounder =
     await getFounderByAuthUserId(userId);
 
-  // User already has a profile.
-  // Don't let them create another one.
+  // Completed profiles can browse the directory.
+  if (existingFounder?.profileCompleted) {
+    redirect("/founders");
+  }
+
+  // An incomplete existing record cannot be recreated.
+  // We'll add a resume/edit flow for these profiles next.
   if (existingFounder) {
-    redirect("/profile");
+    return (
+      <main className="onboarding-page">
+        <div className="onboarding-header">
+          <h1>Finish your profile</h1>
+          <p>
+            You already have a profile saved, but it has
+            not been marked as complete yet.
+            Please contact the site administrator
+            to finish activating your profile.
+          </p>
+        </div>
+      </main>
+    );
   }
 
   return (
     <main className="onboarding-page">
       <div className="onboarding-header">
-        <h1>Create your founder profile</h1>
+        <h1>Create your profile</h1>
 
         <p>
-          Tell the USC community a little about
-          yourself, what you're interested in, and
-          who you'd like to meet.
+          Introduce yourself to the USC community.
+          Share your background, skills, interests,
+          and the people you'd like to connect with.
         </p>
       </div>
 

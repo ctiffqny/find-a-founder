@@ -1,13 +1,18 @@
+
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-
 import { createFounder } from "@/lib/airtable";
 
+export type CreateProfileState = {
+  error: string | null;
+};
+
 export async function createFounderProfile(
+  _previousState: CreateProfileState,
   formData: FormData
-) {
+): Promise<CreateProfileState> {
   const { userId } = await auth.protect();
 
   const getText = (name: string) =>
@@ -17,53 +22,61 @@ export async function createFounderProfile(
   const lastName = getText("lastName");
   const uscEmail = getText("uscEmail").toLowerCase();
 
-  // Basic server-side validation.
   if (!firstName || !lastName) {
-    throw new Error(
-      "First name and last name are required."
-    );
+    return {
+      error: "Please enter your first and last name.",
+    };
   }
 
-  if (!uscEmail.endsWith("@usc.edu")) {
-    throw new Error(
-      "Please use your USC email address."
-    );
+  if (!/^[^\s@]+@usc\.edu$/i.test(uscEmail)) {
+    return {
+      error: "Please use your USC email address ending in @usc.edu.",
+    };
   }
 
-  await createFounder(userId, {
-    firstName,
-    lastName,
-    uscEmail,
+  if (!getText("graduationYear") || !getText("school")) {
+    return {
+      error: "Please select your graduation year and USC school.",
+    };
+  }
 
-    graduationYear: getText("graduationYear"),
-    otherGraduationYear: getText("otherGraduationYear"),
+  if (!getText("bio") || !getText("availability")) {
+    return {
+      error: "Please complete your bio and availability.",
+    };
+  }
 
-    school: getText("school"),
-    degreeProgram: getText("degreeProgram"),
+  try {
+    await createFounder(userId, {
+      firstName,
+      lastName,
+      uscEmail,
+      graduationYear: getText("graduationYear"),
+      otherGraduationYear: getText("otherGraduationYear"),
+      school: getText("school"),
+      degreeProgram: getText("degreeProgram"),
+      hometown: getText("hometown"),
+      currentLocation: getText("currentLocation"),
+      bio: getText("bio"),
+      skills: formData.getAll("skills").map(String),
+      areasOfInterest: formData
+        .getAll("areasOfInterest")
+        .map(String),
+      otherAreaOfInterest: getText("otherAreaOfInterest"),
+      lookingToConnectWith: formData
+        .getAll("lookingToConnectWith")
+        .map(String),
+      workingOn: getText("workingOn"),
+      availability: getText("availability"),
+    });
+  } catch (error) {
+    console.error("Profile creation failed:", error);
 
-    hometown: getText("hometown"),
-    currentLocation: getText("currentLocation"),
+    return {
+      error:
+        "We couldn't save your profile. Please try again. If the problem continues, contact the site administrator.",
+    };
+  }
 
-    bio: getText("bio"),
-
-    skills: formData
-      .getAll("skills")
-      .map(String),
-
-    areasOfInterest: formData
-      .getAll("areasOfInterest")
-      .map(String),
-
-    otherAreaOfInterest: getText("otherAreaOfInterest"),
-
-    lookingToConnectWith: formData
-      .getAll("lookingToConnectWith")
-      .map(String),
-
-    workingOn: getText("workingOn"),
-
-    availability: getText("availability"),
-  });
-
-  redirect("/profile");
+  redirect("/founders");
 }

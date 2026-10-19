@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 
 import { getFounderById } from "@/lib/airtable";
+import { requireCompletedProfile } from "@/lib/require-completed-profile";
 
 type FounderProfilePageProps = {
   params: Promise<{
@@ -16,6 +17,8 @@ export default async function FounderProfilePage({
 
   await auth.protect();
   const { id } = await params;
+
+  await requireCompletedProfile();
 
   const founder = await getFounderById(id);
 

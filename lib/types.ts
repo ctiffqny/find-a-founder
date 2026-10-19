@@ -21,4 +21,6 @@ export type Founder = {
 
   workingOn?: string;
   availability?: string;
+
+  profileCompleted?: boolean;
 };

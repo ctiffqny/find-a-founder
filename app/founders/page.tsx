@@ -1,9 +1,11 @@
 import { getFounders } from "@/lib/airtable";
 import FounderDirectory from "@/components/FounderDirectory";
 import { auth } from "@clerk/nextjs/server";
+import { requireCompletedProfile } from "@/lib/require-completed-profile";
 
 export default async function FoundersPage() {
     await auth.protect();
+    await requireCompletedProfile();
 
     const founders = await getFounders();
 
