@@ -1,3 +1,10 @@
+export const MEMBER_TYPES = [
+  "Student",
+  "Alumni",
+  "Professor",
+  "Investor",
+] as const;
+
 export const GRADUATION_YEARS = [
   "2026",
   "2027",
@@ -81,9 +88,10 @@ export const AREAS_OF_INTEREST = [
   "Other",
 ] as const;
 
-export const AVAILABILITY_OPTIONS = [
-  "Actively looking to build",
-  "Open to opportunities",
-  "Just exploring",
-  "Not currently looking",
+export const STATUS_OPTIONS = [
+  "Just Exploring",
+  "Looking to Join a Team",
+  "Actively Building",
+  "Looking for Talent",
+  "Not Currently Available",
 ] as const;

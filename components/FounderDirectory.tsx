@@ -29,7 +29,7 @@ export default function FounderDirectory({
     () =>
       [
         ...new Set(
-          founders.flatMap((f) => f.skills)
+          founders.flatMap((f) => f.whatICanHelpWith)
         ),
       ].sort(),
     [founders]
@@ -69,7 +69,7 @@ export default function FounderDirectory({
         founder.currentLocation,
         founder.bio,
         founder.workingOn,
-        ...founder.skills,
+        ...founder.whatICanHelpWith,
         ...founder.areasOfInterest,
         ...founder.lookingToConnectWith,
       ]
@@ -84,7 +84,7 @@ export default function FounderDirectory({
         !school || founder.school === school;
 
       const matchesSkill =
-        !skill || founder.skills.includes(skill);
+        !skill || founder.whatICanHelpWith.includes(skill);
 
       const matchesInterest =
         !interest ||

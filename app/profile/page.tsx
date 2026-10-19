@@ -86,12 +86,12 @@ export default async function ProfilePage() {
           </section>
         )}
 
-        {founder.skills.length > 0 && (
+        {founder.whatICanHelpWith.length > 0 && (
           <section className="profile-section">
             <h2>Skills</h2>
 
             <div className="tags">
-              {founder.skills.map((skill) => (
+              {founder.whatICanHelpWith.map((skill) => (
                 <span className="tag" key={skill}>
                   {skill}
                 </span>

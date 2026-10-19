@@ -25,7 +25,7 @@ export default function HomePage() {
               could be closer than you think.
             </p>
 
-            <Link href="/sign-up" className="landing-cta">
+            <Link href="/get-started" className="landing-cta">
               Get Started <span aria-hidden="true">↗</span>
             </Link>
           </div>
@@ -209,7 +209,7 @@ export default function HomePage() {
             SOMETHING.
           </h2>
 
-          <Link href="/sign-up" className="landing-cta">
+          <Link href="/get-started" className="landing-cta">
             Join Find-a-Founder ↗
           </Link>
 

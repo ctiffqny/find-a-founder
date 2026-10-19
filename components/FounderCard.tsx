@@ -10,18 +10,24 @@ export default function FounderCard({
 }: FounderCardProps) {
   return (
     <article className="founder-card">
-      {founder.profilePhoto ? (
-        <img
-          src={founder.profilePhoto}
-          alt={`${founder.name} profile`}
-          className="founder-photo"
-        />
-      ) : (
-        <div className="founder-photo-placeholder">
-          {founder.firstName?.charAt(0)}
-          {founder.lastName?.charAt(0)}
-        </div>
-      )}
+      
+    {founder.profilePhoto ? (
+      <img
+        src={founder.profilePhoto}
+        alt={`${founder.name}'s profile photo`}
+        className="founder-photo"
+      />
+    ) : (
+      <div className="founder-photo-placeholder">
+        {founder.name
+          .trim()
+          .split(/\s+/)
+          .map((part) => part[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase()}
+      </div>
+    )}
 
       <div className="founder-card-content">
         <h2>{founder.name}</h2>
@@ -45,12 +51,12 @@ export default function FounderCard({
           </p>
         )}
 
-        {founder.skills.length > 0 && (
+        {founder.whatICanHelpWith.length > 0 && (
           <div className="tag-section">
             <span className="tag-label">Skills</span>
 
             <div className="tags">
-              {founder.skills.slice(0, 3).map((skill) => (
+              {founder.whatICanHelpWith.slice(0, 3).map((skill) => (
                 <span key={skill} className="tag">
                   {skill}
                 </span>

@@ -15,12 +15,16 @@ export type Founder = {
 
   bio?: string;
 
-  skills: string[];
+  whatICanHelpWith: string[];
   areasOfInterest: string[];
   lookingToConnectWith: string[];
 
   workingOn?: string;
-  availability?: string;
+  status: string;
 
   profileCompleted?: boolean;
+
+  memberTypes: string[];
+  linkedinUrl?: string;
+  portfolioUrl?: string;
 };

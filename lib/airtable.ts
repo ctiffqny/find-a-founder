@@ -1,3 +1,6 @@
+
+import "server-only";
+
 import type { Founder } from "./types";
 
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
@@ -18,8 +21,9 @@ const FOUNDERS_TABLE = "Founders";
  * Convert an Airtable record into the safe Founder object
  * used by the website.
  *
- * Private fields such as email, phone number, LinkedIn,
- * and Auth User ID are deliberately NOT returned.
+ * Private fields such as USC Email, Auth User ID,
+ * LinkedIn URL, and Portfolio URL are deliberately
+ * NOT returned.
  */
 
 function recordToFounder(record: any): Founder {
@@ -42,11 +46,12 @@ function recordToFounder(record: any): Founder {
     firstName: fields["First Name"] || "",
     lastName: fields["Last Name"] || "",
 
-    profilePhoto:
-      fields["Profile Photo"]?.[0]?.url,
+    memberTypes: fields["Member Type"] || [],
 
-    graduationYear,
-    school,
+    profilePhoto: fields["Profile Photo"]?.[0]?.url,
+
+    graduationYear: graduationYear || "",
+    school: school || "",
 
     degreeProgram:
       fields["Degree / Program"] || "",
@@ -60,8 +65,8 @@ function recordToFounder(record: any): Founder {
     bio:
       fields["Bio"] || "",
 
-    skills:
-      fields["Skills"] || [],
+    whatICanHelpWith:
+      fields["What I Can Help With"] || [],
 
     areasOfInterest:
       fields["Areas of Interest"] || [],
@@ -72,8 +77,8 @@ function recordToFounder(record: any): Founder {
     workingOn:
       fields["What I'm Working On"] || "",
 
-    availability:
-      fields["Availability"] || "",
+    status:
+      fields["Status"] || "",
 
     profileCompleted:
       fields["Profile Completed"] === true,
@@ -120,6 +125,9 @@ export async function getFounders(): Promise<Founder[]> {
 
 /*
  * Get one founder by Airtable record ID.
+ *
+ * Hidden or inactive profiles cannot be accessed
+ * through this function.
  */
 export async function getFounderById(
   id: string
@@ -153,8 +161,6 @@ export async function getFounderById(
   const record = await response.json();
   const fields = record.fields;
 
-  // Someone should not be able to access a hidden profile
-  // simply by knowing its Airtable record ID.
   if (
     !fields["Profile Visible"] ||
     fields["Profile Status"] !== "Active"
@@ -165,15 +171,26 @@ export async function getFounderById(
   return recordToFounder(record);
 }
 
-
+/*
+ * Get a founder profile by Clerk user ID.
+ *
+ * This includes Draft profiles so we can check
+ * whether a user has completed onboarding.
+ */
 export async function getFounderByAuthUserId(
   userId: string
 ): Promise<Founder | null> {
   const params = new URLSearchParams();
 
+  // Escape characters that have special meaning
+  // inside an Airtable formula string.
+  const safeUserId = userId
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+
   params.set(
     "filterByFormula",
-    `{Auth User ID}='${userId}'`
+    `{Auth User ID}='${safeUserId}'`
   );
 
   params.set("maxRecords", "1");
@@ -209,30 +226,54 @@ export async function getFounderByAuthUserId(
   return recordToFounder(data.records[0]);
 }
 
+/*
+ * Data accepted when a user creates a profile.
+ *
+ * Property names match the updated onboarding form
+ * and server action.
+ */
 type CreateFounderInput = {
   firstName: string;
   lastName: string;
   uscEmail: string;
+
+  memberTypes: string[];
+
   graduationYear: string;
   otherGraduationYear: string;
+
   school: string;
   degreeProgram: string;
+
   hometown: string;
   currentLocation: string;
+
   bio: string;
-  skills: string[];
+
+  whatICanHelpWith: string[];
   areasOfInterest: string[];
   otherAreaOfInterest: string;
+
   lookingToConnectWith: string[];
   workingOn: string;
-  availability: string;
+
+  status: string;
+
+  linkedinUrl: string;
+  portfolioUrl: string;
 };
 
+/*
+ * Create a new founder profile.
+ *
+ * One Clerk account can create only one profile.
+ * Newly created profiles are marked as completed
+ * but remain Draft and hidden until approved.
+ */
 export async function createFounder(
   userId: string,
   input: CreateFounderInput
 ): Promise<Founder> {
-  // Prevent one Clerk account from creating multiple profiles.
   const existingFounder =
     await getFounderByAuthUserId(userId);
 
@@ -263,46 +304,57 @@ export async function createFounder(
 
           "USC Email": input.uscEmail,
 
-          // IMPORTANT:
-          // This comes from Clerk on the server.
-          // The browser never supplies it.
+          // Clerk provides this ID on the server.
           "Auth User ID": userId,
+
+          "Member Type": input.memberTypes,
 
           "Graduation Year": input.graduationYear,
 
           "If Other, Graduation Year":
             input.graduationYear === "Other"
-                ? input.otherGraduationYear
-                : "",
+              ? input.otherGraduationYear
+              : "",
 
           "USC School": input.school,
 
           "Degree / Program": input.degreeProgram,
 
           Hometown: input.hometown,
+
           "Current Location": input.currentLocation,
 
           Bio: input.bio,
 
-          Skills: input.skills,
-          "Areas of Interest": input.areasOfInterest,
+          "What I Can Help With":
+            input.whatICanHelpWith,
+
+          "Areas of Interest":
+            input.areasOfInterest,
 
           "If Other, Area of Interest":
             input.areasOfInterest.includes("Other")
-            ? input.otherAreaOfInterest
-            : "",
+              ? input.otherAreaOfInterest
+              : "",
 
           "Looking to Connect With":
             input.lookingToConnectWith,
 
-          "What I'm Working On": input.workingOn,
+          "What I'm Working On":
+            input.workingOn,
 
-          Availability: input.availability,
+          Status: input.status,
 
-          // User has finished the required onboarding form.
+          // Stored in Airtable but not returned
+          // by recordToFounder().
+          "LinkedIn URL": input.linkedinUrl,
+          "Portfolio URL": input.portfolioUrl,
+
+          // User completed the onboarding form.
           "Profile Completed": true,
 
-          // New profiles aren't public immediately.
+          // Profile approval is separate from
+          // onboarding completion.
           "Profile Visible": false,
           "Profile Status": "Draft",
         },
@@ -323,4 +375,89 @@ export async function createFounder(
   const record = await response.json();
 
   return recordToFounder(record);
+}
+
+
+/*
+ * Upload a JPEG or PNG profile photo to an existing
+ * Airtable founder record.
+ *
+ * This function must only be called on the server.
+ */
+export async function uploadFounderProfilePhoto(
+  founderRecordId: string,
+  file: File
+): Promise<void> {
+  const allowedTypes = ["image/jpeg", "image/png"];
+  const maxFileSize = 2 * 1024 * 1024;
+
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error("Only JPEG and PNG images are allowed.");
+  }
+
+  if (file.size === 0 || file.size > maxFileSize) {
+    throw new Error("Profile photos must be smaller than 2 MB.");
+  }
+
+  // Check the file signature, not just the browser MIME type.
+  const header = new Uint8Array(
+    await file.slice(0, 8).arrayBuffer()
+  );
+
+  const isJpeg =
+    header[0] === 0xff &&
+    header[1] === 0xd8 &&
+    header[2] === 0xff;
+
+  const isPng =
+    header.length >= 8 &&
+    header[0] === 0x89 &&
+    header[1] === 0x50 &&
+    header[2] === 0x4e &&
+    header[3] === 0x47 &&
+    header[4] === 0x0d &&
+    header[5] === 0x0a &&
+    header[6] === 0x1a &&
+    header[7] === 0x0a;
+
+  if (
+    (file.type === "image/jpeg" && !isJpeg) ||
+    (file.type === "image/png" && !isPng)
+  ) {
+    throw new Error("The selected file is not a valid image.");
+  }
+
+  const bytes = Buffer.from(await file.arrayBuffer());
+
+  const extension =
+    file.type === "image/png" ? "png" : "jpg";
+
+  const response = await fetch(
+    `https://content.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(
+      founderRecordId
+    )}/${encodeURIComponent("Profile Photo")}/uploadAttachment`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contentType: file.type,
+        filename: `profile-photo.${extension}`,
+        file: bytes.toString("base64"),
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.text();
+
+    console.error("Airtable photo upload error:", error);
+
+    throw new Error(
+      `Failed to upload profile photo (${response.status})`
+    );
+  }
 }
