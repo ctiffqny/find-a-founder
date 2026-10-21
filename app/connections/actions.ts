@@ -14,7 +14,10 @@ import {
   getConnectionRequestById,
   getConnectionRequestsForFounder,
   updateConnectionRequestStatus,
+  markConnectionEmailSent,
 } from "@/lib/connections";
+
+import { sendConnectionRequestEmail } from "@/lib/email";
 
 type ActionResult = {
   success: boolean;
@@ -38,6 +41,40 @@ async function getCurrentFounder() {
 
   return founder;
 }
+
+
+async function getFounderEmail(
+  founderId: string
+): Promise<{ email: string; name: string }> {
+  const baseId = process.env.AIRTABLE_BASE_ID;
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+
+  if (!baseId || !token) {
+    throw new Error("Missing Airtable configuration.");
+  }
+
+  const response = await fetch(
+    `https://api.airtable.com/v0/${baseId}/Founders/${encodeURIComponent(founderId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Unable to retrieve recipient email.");
+  }
+
+  const record = await response.json();
+
+  return {
+    email: record.fields?.["USC Email"] ?? "",
+    name: record.fields?.["Name"] ?? "Founder",
+  };
+}
+
 
 // Send a new connection request.
 export async function sendConnectionRequest(
@@ -116,11 +153,40 @@ export async function sendConnectionRequest(
       };
     }
 
-    await createConnectionRequest(
-      sender.id,
-      recipientFounderId,
-      cleanedMessage
+    
+    const request = await createConnectionRequest(
+    sender.id,
+    recipientFounderId,
+    cleanedMessage
     );
+
+    // Send the email after Airtable saves the request.
+    // Email failures must not cancel the connection request.
+    try {
+    const recipientInfo = await getFounderEmail(
+        recipientFounderId
+    );
+
+    if (!recipientInfo.email) {
+        console.error(
+        "Recipient does not have an email address in Airtable."
+        );
+    } else {
+        await sendConnectionRequestEmail({
+        recipientEmail: recipientInfo.email,
+        recipientName: recipientInfo.name,
+        senderName: sender.name,
+        });
+
+        await markConnectionEmailSent(request.id);
+    }
+    } catch (emailError) {
+    console.error(
+        "Connection request saved, but email notification failed:",
+        emailError
+    );
+    }
+
 
     revalidatePath("/connections");
     revalidatePath(`/founders/${recipientFounderId}`);
