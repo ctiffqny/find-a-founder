@@ -68,8 +68,15 @@ function recordToFounder(record: any): Founder {
     whatICanHelpWith:
       fields["What I Can Help With"] || [],
 
-    areasOfInterest:
-      fields["Areas of Interest"] || [],
+    areasOfInterest: [
+      ...(fields["Areas of Interest"] || []).filter(
+        (interest: string) => interest !== "Other"
+      ),
+      ...String(fields["If Other, Area of Interest"] || "")
+        .split(",")
+        .map((interest) => interest.trim())
+        .filter(Boolean),
+    ],
 
     lookingToConnectWith:
       fields["Looking to Connect With"] || [],
@@ -503,4 +510,143 @@ export async function getFounderProfessionalLinks(
     linkedinUrl: fields["LinkedIn URL"] || null,
     portfolioUrl: fields["Portfolio URL"] || null,
   };
+}
+
+
+
+export type EditableFounderProfile = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  bio: string;
+  hometown: string;
+  currentLocation: string;
+  degreeProgram: string;
+  workingOn: string;
+  status: string;
+  memberTypes: string[];
+  whatICanHelpWith: string[];
+  areasOfInterest: string[];
+  customInterests: string[];
+  lookingToConnectWith: string[];
+  linkedinUrl: string;
+  portfolioUrl: string;
+};
+
+export async function getEditableFounderProfile(
+  userId: string
+): Promise<EditableFounderProfile | null> {
+  const founder = await getFounderByAuthUserId(userId);
+
+  if (!founder) return null;
+
+  const response = await fetch(
+    `${AIRTABLE_URL}/${encodeURIComponent(FOUNDERS_TABLE)}/${founder.id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Could not load your profile for editing.");
+  }
+
+  const record = await response.json();
+  const fields = record.fields ?? {};
+
+  return {
+    id: founder.id,
+    firstName: fields["First Name"] || "",
+    lastName: fields["Last Name"] || "",
+    bio: fields["Bio"] || "",
+    hometown: fields["Hometown"] || "",
+    currentLocation: fields["Current Location"] || "",
+    degreeProgram: fields["Degree / Program"] || "",
+    workingOn: fields["What I'm Working On"] || "",
+    status: fields["Status"] || "",
+    memberTypes: fields["Member Type"] || [],
+    whatICanHelpWith: fields["What I Can Help With"] || [],
+    areasOfInterest: (fields["Areas of Interest"] || []).filter(
+      (interest: string) => interest !== "Other"
+    ),
+    customInterests: String(
+      fields["If Other, Area of Interest"] || ""
+    )
+      .split(",")
+      .map((interest) => interest.trim())
+      .filter(Boolean),
+    lookingToConnectWith:
+      fields["Looking to Connect With"] || [],
+    linkedinUrl: fields["LinkedIn URL"] || "",
+    portfolioUrl: fields["Portfolio URL"] || "",
+  };
+}
+
+export async function updateFounderProfile(
+  userId: string,
+  input: Omit<EditableFounderProfile, "id">
+): Promise<void> {
+  // Always resolve ownership from the authenticated Clerk ID.
+  // Never trust a founder record ID submitted by the browser.
+  const founder = await getFounderByAuthUserId(userId);
+
+  if (!founder) {
+    throw new Error("Founder profile not found.");
+  }
+
+  const customInterests = [
+    ...new Set(
+      input.customInterests
+        .map((interest) => interest.trim())
+        .filter(Boolean)
+    ),
+  ];
+
+  const response = await fetch(
+    `${AIRTABLE_URL}/${encodeURIComponent(FOUNDERS_TABLE)}/${founder.id}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fields: {
+          Name: `${input.firstName} ${input.lastName}`.trim(),
+          "First Name": input.firstName,
+          "Last Name": input.lastName,
+          Bio: input.bio,
+          Hometown: input.hometown,
+          "Current Location": input.currentLocation,
+          "Degree / Program": input.degreeProgram,
+          "What I'm Working On": input.workingOn,
+          Status: input.status,
+          "Member Type": input.memberTypes,
+          "What I Can Help With": input.whatICanHelpWith,
+          "Areas of Interest": [
+            ...input.areasOfInterest,
+            ...(customInterests.length ? ["Other"] : []),
+          ],
+          "If Other, Area of Interest":
+            customInterests.join(", "),
+          "Looking to Connect With":
+            input.lookingToConnectWith,
+          "LinkedIn URL": input.linkedinUrl,
+          "Portfolio URL": input.portfolioUrl,
+        },
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    console.error(
+      "Airtable profile update error:",
+      await response.text()
+    );
+    throw new Error("Failed to update founder profile.");
+  }
 }

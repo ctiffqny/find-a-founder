@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import { getFounderByAuthUserId } from "@/lib/airtable";

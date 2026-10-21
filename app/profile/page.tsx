@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
-
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { getFounderByAuthUserId } from "@/lib/airtable";
 
 export default async function ProfilePage() {
   const { userId } = await auth.protect();
 
   const founder = await getFounderByAuthUserId(userId);
+  const clerkUser = await currentUser();
+  const profilePhoto = clerkUser?.imageUrl || founder?.profilePhoto;
 
   if (!founder) {
     return (
@@ -34,9 +35,9 @@ export default async function ProfilePage() {
       <h1>My Profile</h1>
 
       <section className="profile-header">
-        {founder.profilePhoto ? (
+        {profilePhoto ? (
           <img
-            src={founder.profilePhoto}
+            src={profilePhoto}
             alt={`${founder.name} profile`}
             className="profile-photo"
           />
