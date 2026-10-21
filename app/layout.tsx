@@ -44,6 +44,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   Browse Founders
                 </Link>
 
+                <Link href="/connections">My Connections</Link>
+
                 <Link href="/profile">
                   My Profile
                 </Link>

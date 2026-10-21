@@ -15,6 +15,8 @@ import {
 
 const initialState: CreateProfileState = { error: null };
 const USC_EMAIL_REGEX = /^[^\s@]+@usc\.edu$/i;
+const ALLOW_TEST_EMAILS =
+  process.env.NODE_ENV === "development";
 const MAX_PHOTO_SIZE = 2 * 1024 * 1024;
 const PHOTO_TYPES = ["image/jpeg", "image/png"];
 
@@ -32,18 +34,23 @@ export default function OnboardingForm() {
   );
 
   const emailIsInvalid =
-    emailTouched && !USC_EMAIL_REGEX.test(uscEmail.trim());
+    emailTouched && !ALLOW_TEST_EMAILS && !USC_EMAIL_REGEX.test(uscEmail.trim());
 
   return (
     <form
       action={formAction}
       className="onboarding-form"
       onSubmit={(event) => {
-        setEmailTouched(true);
-        if (!USC_EMAIL_REGEX.test(uscEmail.trim()) || photoError) {
-          event.preventDefault();
-        }
-      }}
+      setEmailTouched(true);
+
+      if (
+        (!ALLOW_TEST_EMAILS &&
+          !USC_EMAIL_REGEX.test(uscEmail.trim())) ||
+        photoError
+      ) {
+        event.preventDefault();
+      }
+    }}
     >
       {state.error && (
         <p className="form-error" role="alert">
@@ -289,8 +296,9 @@ export default function OnboardingForm() {
       <fieldset className="professional-links-section">
         <legend>Professional Links (Optional)</legend>
         <p className="professional-links-description">
-          These links won't be displayed publicly on your profile. Other
-          members can access them after sending you a connection request.
+          These links won't be displayed publicly on your profile.
+          Other members can access them only after you accept their
+          connection request.
         </p>
         <div className="professional-links-fields">
           <label>

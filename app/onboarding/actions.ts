@@ -14,6 +14,7 @@ export type CreateProfileState = {
 };
 
 const MAX_PHOTO_SIZE = 2 * 1024 * 1024;
+const USC_EMAIL_REGEX = /^[^\s@]+@usc\.edu$/i;
 
 function isValidOptionalUrl(value: string): boolean {
   if (!value) return true;
@@ -85,7 +86,8 @@ export async function createFounderProfile(
     };
   }
 
-  if (!/^[^\s@]+@usc\.edu$/i.test(uscEmail)) {
+  if (process.env.NODE_ENV !== "development" &&
+  !USC_EMAIL_REGEX.test(uscEmail)) {
     return {
       error:
         "Please use your USC email address ending in @usc.edu.",

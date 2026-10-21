@@ -355,8 +355,8 @@ export async function createFounder(
 
           // Profile approval is separate from
           // onboarding completion.
-          "Profile Visible": false,
-          "Profile Status": "Draft",
+          "Profile Visible": true,
+          "Profile Status": "Active",
         },
       }),
     }

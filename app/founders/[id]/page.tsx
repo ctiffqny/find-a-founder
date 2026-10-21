@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getFounderById } from "@/lib/airtable";
 import { requireCompletedProfile } from "@/lib/require-completed-profile";
+import ConnectButton from "@/components/ConnectButton";
 
 type FounderProfilePageProps = {
   params: Promise<{
@@ -83,15 +84,7 @@ export default async function FounderProfilePage({
             </p>
           )}
 
-          {/* Connection requests will be added later. */}
-          <button
-            type="button"
-            className="contact-founder-button"
-            disabled
-            title="Connection requests coming soon"
-          >
-            Connect — Coming Soon
-          </button>
+          <ConnectButton founderId={founder.id} />
         </div>
       </section>
 
