@@ -1,16 +1,34 @@
-
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { getFounderById } from "@/lib/airtable";
+import { auth } from "@clerk/nextjs/server";
+import {
+  getFounderByAuthUserId,
+  getFounderProfessionalLinks,
+  getFounderById,
+} from "@/lib/airtable";
 import { requireCompletedProfile } from "@/lib/require-completed-profile";
 import ConnectButton from "@/components/ConnectButton";
+import { getConnectionStatusBetweenFounders } from "@/lib/connections";
 
 type FounderProfilePageProps = {
   params: Promise<{
     id: string;
   }>;
 };
+
+function safeExternalUrl(value: string | null | undefined) {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 export default async function FounderProfilePage({
   params,
@@ -23,6 +41,40 @@ export default async function FounderProfilePage({
   if (!founder) {
     notFound();
   }
+
+  // Identify the signed-in founder.
+  const { userId } = await auth();
+
+  const currentFounder = userId
+    ? await getFounderByAuthUserId(userId)
+    : null;
+
+  const isOwnProfile = currentFounder?.id === founder.id;
+
+  // Check whether these two founders have connected.
+  const connectionStatus =
+    currentFounder && !isOwnProfile
+      ? await getConnectionStatusBetweenFounders(
+          currentFounder.id,
+          founder.id
+        )
+      : null;
+
+  // Professional links are private until a connection is accepted.
+  const canViewProfessionalLinks =
+    isOwnProfile || connectionStatus === "Accepted";
+
+  const professionalLinks = canViewProfessionalLinks
+    ? await getFounderProfessionalLinks(founder.id)
+    : null;
+
+  const linkedinUrl = safeExternalUrl(
+    professionalLinks?.linkedinUrl
+  );
+
+  const portfolioUrl = safeExternalUrl(
+    professionalLinks?.portfolioUrl
+  );
 
   const initials =
     `${founder.firstName?.charAt(0) || ""}${
@@ -65,7 +117,6 @@ export default async function FounderProfilePage({
 
           <p className="profile-school">
             {founder.school}
-
             {founder.graduationYear &&
               ` · Class of ${founder.graduationYear}`}
           </p>
@@ -84,7 +135,32 @@ export default async function FounderProfilePage({
             </p>
           )}
 
-          <ConnectButton founderId={founder.id} />
+          {/* Connection status */}
+          {isOwnProfile ? (
+            <span className="connection-status">
+              Your Profile
+            </span>
+          ) : connectionStatus === "Accepted" ? (
+            <span className="connection-status">
+              ✓ Connected
+            </span>
+          ) : connectionStatus === "Pending" ? (
+            <span className="connection-status">
+              Request Pending
+              <span>
+                {" · "}
+                <Link href="/connections">
+                  View My Connections
+                </Link>
+              </span>
+            </span>
+          ) : connectionStatus === "Declined" ? (
+            <span className="connection-status">
+              Connection Unavailable
+            </span>
+          ) : (
+            <ConnectButton founderId={founder.id} />
+          )}
         </div>
       </section>
 
@@ -150,6 +226,39 @@ export default async function FounderProfilePage({
                 </span>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Only visible to the owner or accepted connections */}
+        {canViewProfessionalLinks && (
+          <section className="profile-section professional-links-display">
+            <h2>Professional Links</h2>
+
+            {linkedinUrl || portfolioUrl ? (
+              <div className="professional-links-list">
+                {linkedinUrl && (
+                  <a
+                    href={linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    LinkedIn Profile ↗
+                  </a>
+                )}
+
+                {portfolioUrl && (
+                  <a
+                    href={portfolioUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Personal Website / Portfolio ↗
+                  </a>
+                )}
+              </div>
+            ) : (
+              <p>No professional links added yet.</p>
+            )}
           </section>
         )}
       </div>

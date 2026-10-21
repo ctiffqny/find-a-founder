@@ -223,3 +223,37 @@ export async function markConnectionEmailSent(
     }
   );
 }
+
+
+
+export async function getConnectionStatusBetweenFounders(
+  currentFounderId: string,
+  otherFounderId: string
+): Promise<ConnectionStatus | null> {
+  const requests = await getConnectionRequestsForFounder(
+    currentFounderId
+  );
+
+  const matchingRequests = requests.filter(
+    (request) =>
+      (request.fromFounderId === currentFounderId &&
+        request.toFounderId === otherFounderId) ||
+      (request.fromFounderId === otherFounderId &&
+        request.toFounderId === currentFounderId)
+  );
+
+  // Accepted takes priority if historical records exist.
+  if (matchingRequests.some((request) => request.status === "Accepted")) {
+    return "Accepted";
+  }
+
+  if (matchingRequests.some((request) => request.status === "Pending")) {
+    return "Pending";
+  }
+
+  if (matchingRequests.some((request) => request.status === "Declined")) {
+    return "Declined";
+  }
+
+  return null;
+}

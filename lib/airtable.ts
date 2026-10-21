@@ -461,3 +461,46 @@ export async function uploadFounderProfilePhoto(
     );
   }
 }
+
+
+
+export async function getFounderProfessionalLinks(
+  founderId: string
+): Promise<{
+  linkedinUrl: string | null;
+  portfolioUrl: string | null;
+}> {
+  if (!/^rec[a-zA-Z0-9]+$/.test(founderId)) {
+    throw new Error("Invalid founder ID.");
+  }
+
+  const baseId = process.env.AIRTABLE_BASE_ID;
+  const token = process.env.AIRTABLE_ACCESS_TOKEN;
+
+  if (!baseId || !token) {
+    throw new Error("Missing Airtable configuration.");
+  }
+
+  const response = await fetch(
+    `https://api.airtable.com/v0/${baseId}/Founders/${encodeURIComponent(founderId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Unable to retrieve professional links.");
+  }
+
+  const record = await response.json();
+
+  const fields = record.fields ?? {};
+
+  return {
+    linkedinUrl: fields["LinkedIn URL"] || null,
+    portfolioUrl: fields["Portfolio URL"] || null,
+  };
+}
