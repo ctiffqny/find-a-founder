@@ -89,7 +89,7 @@ export default async function ProfilePage() {
 
         {founder.whatICanHelpWith.length > 0 && (
           <section className="profile-section">
-            <h2>Skills</h2>
+            <h2>What I Can Help With</h2>
 
             <div className="tags">
               {founder.whatICanHelpWith.map((skill) => (
