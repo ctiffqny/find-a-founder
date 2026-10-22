@@ -1313,3 +1313,403 @@
   color: #166534;
 }
 
+
+
+/* Founder profile redesign â€” scoped to profile pages */
+.profile-page {
+  width: min(1080px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 52px 0 100px;
+  color: #202124;
+}
+.profile-page-intro { margin-bottom: 28px; }
+.profile-eyebrow { display: block; color: #990000; font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; margin-bottom: 10px; }
+.profile-page-intro h1 { font-size: clamp(32px, 5vw, 46px); letter-spacing: -.045em; line-height: 1.1; margin: 0 0 10px; }
+.profile-page-intro p { color: #666; line-height: 1.6; margin: 0; }
+.profile-page .back-link { display: inline-flex; margin: 0 0 22px; color: #990000; font-size: 14px; font-weight: 700; text-decoration: none; }
+.profile-page .back-link:hover { text-decoration: underline; }
+.profile-page .profile-header {
+  display: flex; align-items: flex-start; gap: 28px;
+  padding: 32px; border: 1px solid #e9e5e2; border-radius: 20px;
+  background: linear-gradient(125deg, #fff 65%, #fff9f6 100%);
+  box-shadow: 0 10px 30px rgba(50, 30, 20, .035);
+}
+.profile-page .profile-header-details { flex: 1; min-width: 0; }
+.profile-page .profile-header-details h1,
+.profile-page .profile-header-details h2 { font-size: clamp(26px, 3.8vw, 38px); line-height: 1.15; letter-spacing: -.04em; margin: 0 0 12px; overflow-wrap: anywhere; }
+.profile-page .profile-header-details p { color: #5f6368; line-height: 1.5; margin: 5px 0; }
+.profile-page .profile-header > .profile-photo,
+.profile-page .profile-header > .profile-photo-placeholder {
+  width: 156px; height: 156px; min-width: 156px; max-width: 156px;
+  aspect-ratio: 1; border-radius: 16px; flex-shrink: 0;
+  border: 1px solid #eee2dc; background: #f5f0ed;
+}
+.profile-page .profile-header > .profile-photo { object-fit: cover; display: block; }
+.profile-page .profile-header > .profile-photo-placeholder { display: flex; align-items: center; justify-content: center; color: #990000; font-size: 44px; font-weight: 800; }
+.profile-page .profile-member-tags { margin: 14px 0 8px; }
+.profile-page .profile-availability { display: inline-block; color: #7e1a1a !important; font-size: 13px; font-weight: 700; background: #fff0eb; padding: 7px 12px; border-radius: 999px; margin-top: 12px !important; }
+.profile-page .profile-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.profile-page .profile-actions .view-profile-button,
+.profile-page > .view-profile-button { display: inline-flex; align-items: center; justify-content: center; width: auto; margin: 0; padding: 12px 19px; background: #990000; color: #fff; border-radius: 9px; font-size: 14px; font-weight: 700; text-decoration: none; }
+.profile-page > .view-profile-button { margin-top: 18px; }
+.profile-page .profile-secondary-button { display: inline-flex; align-items: center; justify-content: center; padding: 11px 18px; border: 1px solid #d8d1cc; border-radius: 9px; color: #333; background: #fff; font-size: 14px; font-weight: 700; text-decoration: none; }
+.profile-page .profile-secondary-button:hover { border-color: #990000; color: #990000; }
+.profile-page .profile-actions .connect-widget { width: auto; max-width: 100%; }
+.profile-page .profile-actions .connection-status { margin: 0; }
+.profile-page .profile-content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
+.profile-page .profile-section { min-width: 0; margin: 0; padding: 25px 26px; border: 1px solid #ebe7e3; border-radius: 16px; background: #fff; }
+.profile-page .profile-section h2 { font-size: 17px; letter-spacing: -.02em; margin: 0 0 14px; }
+.profile-page .profile-section p { margin: 0; color: #555; font-size: 15px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+.profile-page .profile-section .tags { gap: 8px; }
+.profile-page .profile-section .tag,
+.profile-page .profile-member-tags .tag { background: #f6f3f1; border: 1px solid #eee8e4; color: #493f3a; font-size: 12px; padding: 7px 11px; }
+.profile-page .professional-links-display { margin-top: 0; }
+.profile-page .professional-links-list a { color: #990000; }
+@media (max-width: 700px) {
+  .profile-page { width: min(100% - 32px, 1080px); padding: 30px 0 70px; }
+  .profile-page .profile-header { padding: 22px; gap: 18px; }
+  .profile-page .profile-header > .profile-photo,
+  .profile-page .profile-header > .profile-photo-placeholder { width: 104px; height: 104px; min-width: 104px; max-width: 104px; font-size: 30px; }
+  .profile-page .profile-content { grid-template-columns: 1fr; gap: 14px; }
+  .profile-page .profile-section { padding: 22px; }
+}
+@media (max-width: 480px) {
+  .profile-page .profile-header { flex-direction: column; }
+  .profile-page .profile-actions { align-items: stretch; }
+  .profile-page .profile-actions .view-profile-button,
+  .profile-page .profile-secondary-button { flex: 1 1 100%; }
+}
+
+
+/* ========================================
+   FIND-A-FOUNDER OPPORTUNITIES BOARD
+   ======================================== */
+
+.opportunities-page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 60px 24px 100px;
+  color: #171717;
+}
+
+.opportunities-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.opportunities-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #990000;
+  margin-bottom: 12px;
+}
+
+.opportunities-page h1 {
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+  margin: 0 0 12px;
+}
+
+.opportunities-heading p:not(.opportunities-eyebrow),
+.opportunity-intro {
+  color: #666;
+  line-height: 1.6;
+}
+
+.opportunity-primary-link,
+.opportunity-form > button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: #990000;
+  color: white;
+  padding: 13px 20px;
+  text-decoration: none;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.opportunity-primary-link:hover,
+.opportunity-form > button:hover {
+  background: #740000;
+}
+
+.opportunity-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.opportunity-filters input:not([type="checkbox"]),
+.opportunity-filters select,
+.opportunity-form input,
+.opportunity-form select,
+.opportunity-form textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 9px;
+  background: white;
+  font: inherit;
+}
+
+.opportunity-closed-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.opportunity-count {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.opportunity-card,
+.opportunity-detail {
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  background: white;
+  padding: 26px;
+  min-width: 0;
+}
+
+.opportunity-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.opportunity-type,
+.opportunity-open,
+.opportunity-closed {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.opportunity-type {
+  background: #fff0f0;
+  color: #990000;
+}
+
+.opportunity-open {
+  background: #e9f7ee;
+  color: #176534;
+}
+
+.opportunity-closed {
+  background: #eee;
+  color: #666;
+}
+
+.opportunity-card h2 {
+  font-size: 23px;
+  letter-spacing: -0.025em;
+  margin: 0 0 12px;
+}
+
+.opportunity-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.opportunity-card h2 a:hover {
+  color: #990000;
+}
+
+.opportunity-description {
+  color: #555;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-bottom: 18px;
+}
+
+.opportunity-meta {
+  font-size: 14px;
+  color: #555;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.opportunity-card-footer {
+  border-top: 1px solid #eee;
+  padding-top: 18px;
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #666;
+}
+
+.opportunity-card-footer a,
+.opportunity-author a {
+  color: #990000;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.opportunity-empty {
+  padding: 55px 20px;
+  border: 1px dashed #ddd;
+  border-radius: 14px;
+  text-align: center;
+  color: #777;
+}
+
+.opportunity-narrow {
+  max-width: 780px;
+}
+
+.opportunity-back {
+  display: inline-block;
+  color: #555;
+  text-decoration: none;
+  margin-bottom: 28px;
+  font-size: 14px;
+}
+
+.opportunity-back:hover {
+  color: #990000;
+}
+
+.opportunity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 32px;
+}
+
+.opportunity-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 650;
+}
+
+.opportunity-form textarea {
+  resize: vertical;
+}
+
+.opportunity-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.opportunity-note {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.opportunity-form > button {
+  align-self: flex-start;
+  font: inherit;
+  font-weight: 700;
+}
+
+.opportunity-form > button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.opportunity-detail h1 {
+  overflow-wrap: anywhere;
+}
+
+.opportunity-author {
+  font-size: 14px;
+  color: #666;
+  margin: 12px 0 35px;
+}
+
+.opportunity-detail h2 {
+  font-size: 19px;
+  margin: 28px 0 12px;
+}
+
+.opportunity-detail p {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.opportunity-detail-description {
+  white-space: pre-wrap;
+}
+
+.opportunity-detail-actions {
+  border-top: 1px solid #eee;
+  margin-top: 36px;
+  padding-top: 24px;
+}
+
+.opportunity-close-button {
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 9px;
+  padding: 12px 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 750px) {
+  .opportunities-page {
+    padding: 36px 18px 70px;
+  }
+
+  .opportunities-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .opportunity-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunity-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .opportunity-card,
+  .opportunity-detail {
+    padding: 20px;
+  }
+}

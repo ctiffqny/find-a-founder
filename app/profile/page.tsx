@@ -32,7 +32,7 @@ export default async function ProfilePage() {
 
   return (
     <main className="profile-page">
-      <h1>My Profile</h1>
+      <div className="profile-page-intro"><span className="profile-eyebrow">YOUR FOUNDER SPACE</span><h1>My Profile</h1><p>Introduce yourself, share what you are building, and connect with the USC community.</p></div>
 
       <section className="profile-header">
         {profilePhoto ? (
@@ -48,7 +48,8 @@ export default async function ProfilePage() {
           </div>
         )}
 
-        <div>
+        <div className="profile-header-details">
+          <span className="profile-eyebrow">USC FOUNDER</span>
           <h2>{founder.name}</h2>
 
           <p>
@@ -62,6 +63,9 @@ export default async function ProfilePage() {
             <p>{founder.degreeProgram}</p>
           )}
 
+          {founder.currentLocation && <p className="profile-location">{founder.currentLocation}</p>}
+          {founder.memberTypes?.length > 0 && <div className="tags profile-member-tags">{founder.memberTypes.map((type) => <span className="tag" key={type}>{type}</span>)}</div>}
+          {founder.status && <p className="profile-availability">{founder.status}</p>}
           <div className="profile-actions">
             <Link
               href="/profile/edit"
@@ -72,6 +76,7 @@ export default async function ProfilePage() {
 
             <Link
               href={`/founders/${founder.id}`}
+              className="profile-secondary-button"
             >
               View Public Profile
             </Link>
@@ -87,6 +92,7 @@ export default async function ProfilePage() {
           </section>
         )}
 
+        {founder.hometown && (<section className="profile-section"><h2>Hometown</h2><p>{founder.hometown}</p></section>)}
         {founder.whatICanHelpWith.length > 0 && (
           <section className="profile-section">
             <h2>What I Can Help With</h2>

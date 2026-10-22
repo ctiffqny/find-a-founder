@@ -83,6 +83,7 @@ export default async function FounderProfilePage({
 
   return (
     <main className="profile-page">
+      <div className="profile-page-intro"><span className="profile-eyebrow">MEET THE COMMUNITY</span><h1>Founder Profile</h1><p>Learn more about the people building at USC.</p></div>
       {/* Back button */}
       <Link href="/founders" className="back-link">
         ← Back to people
@@ -102,7 +103,8 @@ export default async function FounderProfilePage({
           </div>
         )}
 
-        <div>
+        <div className="profile-header-details">
+          <span className="profile-eyebrow">USC FOUNDER</span>
           <h1>{founder.name}</h1>
 
           {founder.memberTypes?.length > 0 && (
@@ -130,12 +132,13 @@ export default async function FounderProfilePage({
           )}
 
           {founder.status && (
-            <p className="availability">
+            <p className="profile-availability">
               {founder.status}
             </p>
           )}
 
           {/* Connection status */}
+          <div className="profile-actions">
           {isOwnProfile ? (
             <span className="connection-status">
               Your Profile
@@ -161,6 +164,7 @@ export default async function FounderProfilePage({
           ) : (
             <ConnectButton founderId={founder.id} />
           )}
+          </div>
         </div>
       </section>
 
