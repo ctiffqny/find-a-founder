@@ -650,3 +650,63 @@ export async function updateFounderProfile(
     throw new Error("Failed to update founder profile.");
   }
 }
+
+
+
+export async function keepLatestFounderPhoto(
+  founderRecordId: string
+): Promise<void> {
+  const recordUrl =
+    `${AIRTABLE_URL}/${encodeURIComponent(FOUNDERS_TABLE)}/${founderRecordId}`;
+
+  // Read the current photo attachments.
+  const readResponse = await fetch(recordUrl, {
+    headers: {
+      Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!readResponse.ok) {
+    throw new Error("Could not read founder photos.");
+  }
+
+  const record = await readResponse.json();
+
+  const photos: Array<{ id: string; url: string }> =
+    record.fields?.["Profile Photo"] || [];
+
+  if (photos.length <= 1) return;
+
+  // Airtable's uploadAttachment endpoint appends new photos.
+  // Keep the last uploaded attachment.
+  const latestPhoto = photos[photos.length - 1];
+
+  const updateResponse = await fetch(recordUrl, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      fields: {
+        "Profile Photo": [
+          {
+            id: latestPhoto.id,
+          },
+        ],
+      },
+    }),
+    cache: "no-store",
+  });
+
+  if (!updateResponse.ok) {
+    console.error(
+      "Airtable photo cleanup error:",
+      await updateResponse.text()
+    );
+
+    throw new Error("Could not replace old profile photos.");
+  }
+}
+

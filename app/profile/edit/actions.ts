@@ -8,6 +8,7 @@ import {
   getFounderByAuthUserId,
   updateFounderProfile,
   uploadFounderProfilePhoto,
+  keepLatestFounderPhoto,
 } from "@/lib/airtable";
 
 export type EditProfileState = {
@@ -201,6 +202,7 @@ export async function saveFounderProfile(
 
     try {
       await uploadFounderProfilePhoto(founder.id, photo);
+      await keepLatestFounderPhoto(founder.id);
     } catch (error) {
       console.error("Airtable photo upload failed:", error);
 
