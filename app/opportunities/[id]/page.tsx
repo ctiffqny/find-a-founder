@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
@@ -5,7 +6,10 @@ import { auth } from "@clerk/nextjs/server";
 import { getFounderByAuthUserId } from "@/lib/airtable";
 import { requireCompletedProfile } from "@/lib/require-completed-profile";
 import { getOpportunity } from "@/lib/opportunities";
+import { getOpportunityResponses } from "@/lib/opportunity-responses";
 import { closeMyOpportunity } from "@/app/opportunities/actions";
+
+import InterestForm from "@/components/InterestForm";
 
 type Props = {
   params: Promise<{
@@ -33,6 +37,18 @@ export default async function OpportunityDetailPage({
 
   const isOwner =
     founder?.id === opportunity.founderId;
+
+  // Only look up the signed-in founder's own response.
+  const responses =
+    founder && !isOwner
+      ? await getOpportunityResponses()
+      : [];
+
+  const myResponse = responses.find(
+    (response) =>
+      response.opportunityId === opportunity.id &&
+      response.applicantId === founder?.id
+  );
 
   return (
     <main className="opportunities-page opportunity-narrow">
@@ -100,35 +116,54 @@ export default async function OpportunityDetailPage({
 
         <div className="opportunity-detail-actions">
           {isOwner ? (
-            opportunity.status === "Open" ? (
-              <form action={closeMyOpportunity}>
-                <input
-                  type="hidden"
-                  name="id"
-                  value={opportunity.id}
-                />
+            <>
+              <Link
+                href="/opportunities/responses"
+                className="opportunity-primary-link"
+              >
+                View Responses →
+              </Link>
 
-                <button
-                  type="submit"
-                  className="opportunity-close-button"
+              {opportunity.status === "Open" ? (
+                <form
+                  action={closeMyOpportunity}
+                  className="opportunity-owner-close"
                 >
-                  Close this opportunity
-                </button>
-              </form>
-            ) : (
-              <p>This opportunity is closed.</p>
-            )
+                  <input
+                    type="hidden"
+                    name="id"
+                    value={opportunity.id}
+                  />
+
+                  <button
+                    type="submit"
+                    className="opportunity-close-button"
+                  >
+                    Close this opportunity
+                  </button>
+                </form>
+              ) : (
+                <p>This opportunity is closed.</p>
+              )}
+            </>
+          ) : myResponse ? (
+            <div className="opportunity-interest-result">
+              <h2>You've expressed interest</h2>
+
+              <p>
+                Your response status:{" "}
+                <strong>{myResponse.status}</strong>
+              </p>
+
+              <Link href="/opportunities/responses">
+                View My Responses →
+              </Link>
+            </div>
           ) : opportunity.status === "Open" ? (
-            <Link
-              className="opportunity-primary-link"
-              href={`/founders/${opportunity.founderId}`}
-            >
-              View founder & connect →
-            </Link>
+            <InterestForm opportunityId={opportunity.id} />
           ) : (
             <p>
-              This opportunity is no longer
-              accepting interest.
+              This opportunity is no longer accepting interest.
             </p>
           )}
         </div>

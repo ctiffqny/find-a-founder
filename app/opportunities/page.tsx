@@ -25,12 +25,21 @@ export default async function OpportunitiesPage() {
           </p>
         </div>
 
+        <div className="opportunity-heading-actions">
         <Link
-          href="/opportunities/new"
-          className="opportunity-primary-link"
+            href="/opportunities/responses"
+            className="opportunity-secondary-link"
         >
-          + Post an Opportunity
+            My Responses
         </Link>
+
+        <Link
+            href="/opportunities/new"
+            className="opportunity-primary-link"
+        >
+            + Post an Opportunity
+        </Link>
+        </div>
       </div>
 
       <OpportunityFilters

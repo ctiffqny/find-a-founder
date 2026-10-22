@@ -1713,3 +1713,255 @@
     padding: 20px;
   }
 }
+
+
+
+/* ========================================
+   OPPORTUNITY INTEREST & RESPONSES
+   ======================================== */
+
+.interest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px;
+  border: 1px solid #e8dada;
+  border-radius: 14px;
+  background: #fffafa;
+}
+
+.interest-form h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.interest-form p {
+  margin: 0 0 8px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.interest-form label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.interest-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d5d5d5;
+  border-radius: 9px;
+  padding: 14px;
+  font: inherit;
+  resize: vertical;
+  background: white;
+}
+
+.interest-form textarea:focus {
+  outline: 2px solid #990000;
+  outline-offset: 2px;
+}
+
+.interest-form button,
+.opportunity-accept-button {
+  align-self: flex-start;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 9px;
+  background: #990000;
+  color: white;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.interest-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.opportunity-interest-result {
+  padding: 22px;
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.opportunity-interest-result h2 {
+  margin-top: 0;
+}
+
+.opportunity-interest-result a {
+  color: #990000;
+  font-weight: 700;
+}
+
+.opportunity-owner-close {
+  margin-top: 18px;
+}
+
+.opportunity-response-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0 48px;
+}
+
+.opportunity-response-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 26px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+.opportunity-response-summary strong {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.opportunity-response-summary span {
+  color: #666;
+  font-size: 14px;
+}
+
+.opportunity-response-section {
+  margin-top: 46px;
+}
+
+.opportunity-response-section > h2 {
+  font-size: 25px;
+  margin-bottom: 22px;
+  letter-spacing: -0.025em;
+}
+
+.opportunity-response-list {
+  display: grid;
+  gap: 16px;
+}
+
+.opportunity-response-card {
+  padding: 24px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: white;
+}
+
+.opportunity-response-card h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+}
+
+.opportunity-response-card a {
+  color: #990000;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.opportunity-response-card > p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.opportunity-response-message {
+  padding: 18px;
+  margin: 18px 0;
+  border-radius: 10px;
+  background: #f7f7f7;
+  color: #333 !important;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.interest-status {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.interest-status-pending {
+  background: #fff3cd;
+  color: #805600;
+}
+
+.interest-status-accepted {
+  background: #e5f5e9;
+  color: #206b35;
+}
+
+.interest-status-declined {
+  background: #f1f1f1;
+  color: #666;
+}
+
+.opportunity-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.opportunity-decline-button {
+  padding: 13px 20px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  background: white;
+  color: #333;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.opportunity-accepted-note {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 9px;
+  background: #f0faf2;
+  color: #206b35 !important;
+}
+
+@media (max-width: 600px) {
+  .interest-form {
+    padding: 18px;
+  }
+
+  .opportunity-response-summary {
+    gap: 10px;
+  }
+
+  .opportunity-response-summary > div {
+    padding: 18px;
+  }
+
+  .opportunity-response-card {
+    padding: 18px;
+  }
+}
+
+
+.opportunity-heading-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.opportunity-secondary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border: 1px solid #ddd;
+  border-radius: 9px;
+  background: white;
+  color: #333;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
