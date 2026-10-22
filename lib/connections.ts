@@ -257,3 +257,62 @@ export async function getConnectionStatusBetweenFounders(
 
   return null;
 }
+
+
+export async function ensureAcceptedConnection(
+  founderAId: string,
+  founderBId: string
+): Promise<void> {
+  if (
+    !/^rec[A-Za-z0-9]+$/.test(founderAId) ||
+    !/^rec[A-Za-z0-9]+$/.test(founderBId) ||
+    founderAId === founderBId
+  ) {
+    throw new Error("Invalid founder pair.");
+  }
+
+  const requests =
+    await getConnectionRequestsForFounder(founderAId);
+
+  const matching = requests.filter(
+    (request) =>
+      (request.fromFounderId === founderAId &&
+        request.toFounderId === founderBId) ||
+      (request.fromFounderId === founderBId &&
+        request.toFounderId === founderAId)
+  );
+
+  if (
+    matching.some(
+      (request) => request.status === "Accepted"
+    )
+  ) {
+    return;
+  }
+
+  const pending = matching.find(
+    (request) => request.status === "Pending"
+  );
+
+  if (pending) {
+    await updateConnectionRequestStatus(
+      pending.id,
+      "Accepted"
+    );
+
+    return;
+  }
+
+  // The opportunity owner has explicitly accepted
+  // the applicant's expression of interest.
+  const created = await createConnectionRequest(
+    founderBId,
+    founderAId,
+    "Connected through an accepted opportunity response."
+  );
+
+  await updateConnectionRequestStatus(
+    created.id,
+    "Accepted"
+  );
+}

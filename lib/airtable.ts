@@ -710,3 +710,123 @@ export async function keepLatestFounderPhoto(
   }
 }
 
+
+export type FounderContactDetails = {
+  name: string;
+  email: string;
+  phone: string | null;
+  linkedinUrl: string | null;
+  portfolioUrl: string | null;
+};
+
+export async function getFounderContactDetails(
+  founderId: string
+): Promise<FounderContactDetails> {
+  if (!/^rec[A-Za-z0-9]+$/.test(founderId)) {
+    throw new Error("Invalid founder ID.");
+  }
+
+  const response = await fetch(
+    `${AIRTABLE_URL}/${encodeURIComponent(
+      FOUNDERS_TABLE
+    )}/${encodeURIComponent(founderId)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Could not load founder contact details.");
+  }
+
+  const record = await response.json();
+  const fields = record.fields ?? {};
+
+  return {
+    name: fields["Name"] || "Founder",
+    email: fields["USC Email"] || "",
+    phone:
+      fields["Share Phone With Connections"] === true
+        ? fields["Phone Number"] || null
+        : null,
+    linkedinUrl: fields["LinkedIn URL"] || null,
+    portfolioUrl: fields["Portfolio URL"] || null,
+  };
+}
+
+export async function updateFounderPhone(
+  userId: string,
+  phone: string,
+  sharePhone: boolean
+): Promise<void> {
+  const founder = await getFounderByAuthUserId(userId);
+
+  if (!founder) {
+    throw new Error("Founder profile not found.");
+  }
+
+  const response = await fetch(
+    `${AIRTABLE_URL}/${encodeURIComponent(
+      FOUNDERS_TABLE
+    )}/${encodeURIComponent(founder.id)}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fields: {
+          "Phone Number": phone,
+          "Share Phone With Connections":
+            Boolean(phone) && sharePhone,
+        },
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Could not save phone preferences.");
+  }
+}
+
+export async function getFounderPhonePreferences(
+  userId: string
+): Promise<{
+  phone: string;
+  sharePhone: boolean;
+}> {
+  const founder = await getFounderByAuthUserId(userId);
+
+  if (!founder) {
+    return { phone: "", sharePhone: false };
+  }
+
+  const response = await fetch(
+    `${AIRTABLE_URL}/${encodeURIComponent(
+      FOUNDERS_TABLE
+    )}/${encodeURIComponent(founder.id)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_ACCESS_TOKEN}`,
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Could not load phone preferences.");
+  }
+
+  const record = await response.json();
+
+  return {
+    phone: record.fields?.["Phone Number"] || "",
+    sharePhone:
+      record.fields?.["Share Phone With Connections"] === true,
+  };
+}

@@ -9,6 +9,7 @@ import {
   updateFounderProfile,
   uploadFounderProfilePhoto,
   keepLatestFounderPhoto,
+  updateFounderPhone,
 } from "@/lib/airtable";
 
 export type EditProfileState = {
@@ -59,6 +60,19 @@ export async function saveFounderProfile(
   const status = text("status");
   const linkedinUrl = text("linkedinUrl");
   const portfolioUrl = text("portfolioUrl");
+  const phone = text("phone");
+  const sharePhone =
+  formData.get("sharePhone") === "on";
+
+  if (
+  phone &&
+  !/^\+?[0-9().\-\s]{7,25}$/.test(phone)
+  ) {
+  return {
+      error: "Please enter a valid phone number.",
+      success: false,
+  };
+  }
 
   // 3. Validate required fields
   if (!firstName || !lastName || !bio || !status) {
@@ -178,6 +192,22 @@ export async function saveFounderProfile(
       success: false,
     };
   }
+
+  try {
+    await updateFounderPhone(
+        userId,
+        phone,
+        sharePhone
+    );
+    } catch (error) {
+    console.error("Phone update failed:", error);
+
+    return {
+        error:
+        "Your other profile changes were saved, but the phone number could not be updated.",
+        success: false,
+    };
+    }
 
   // 9. Upload the new photo to Clerk and Airtable
   if (photo) {

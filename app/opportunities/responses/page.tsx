@@ -1,17 +1,28 @@
-
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 
-import { getFounderByAuthUserId } from "@/lib/airtable";
-import { requireCompletedProfile } from "@/lib/require-completed-profile";
-import { getOpportunityResponses } from "@/lib/opportunity-responses";
+import {
+  getFounderByAuthUserId,
+} from "@/lib/airtable";
 
-import { reviewOpportunityResponse } from "./actions";
+import {
+  requireCompletedProfile,
+} from "@/lib/require-completed-profile";
+
+import {
+  getOpportunityResponses,
+} from "@/lib/opportunity-responses";
+
+import OpportunityReviewActions from
+  "@/components/OpportunityReviewActions";
+
+import ConnectedContactButton from "@/components/ConnectedContactButton";
 
 export default async function OpportunityResponsesPage() {
   await requireCompletedProfile();
 
   const { userId } = await auth.protect();
+
   const founder = await getFounderByAuthUserId(userId);
 
   if (!founder) {
@@ -50,8 +61,8 @@ export default async function OpportunityResponsesPage() {
       <h1>My Opportunity Responses</h1>
 
       <p className="opportunity-intro">
-        Manage the interest you've received and
-        keep track of opportunities you've applied to.
+        Manage founders interested in your projects
+        and track your own applications.
       </p>
 
       <div className="opportunity-response-summary">
@@ -75,81 +86,78 @@ export default async function OpportunityResponsesPage() {
           </div>
         ) : (
           <div className="opportunity-response-list">
-            {received.map((response) => (
-              <article
-                className="opportunity-response-card"
-                key={response.id}
-              >
-                <div className="opportunity-card-top">
-                  <span className="opportunity-type">
-                    Incoming interest
-                  </span>
+            {received.map((response) => {
+              const acceptedCount =
+                received.filter(
+                  (item) =>
+                    item.opportunityId ===
+                      response.opportunityId &&
+                    item.status === "Accepted"
+                ).length;
 
-                  <span
-                    className={`interest-status interest-status-${response.status.toLowerCase()}`}
-                  >
-                    {response.status}
-                  </span>
-                </div>
+              return (
+                <article
+                  key={response.id}
+                  className="opportunity-response-card"
+                >
+                  <div className="opportunity-card-top">
+                    <span className="opportunity-type">
+                      Incoming interest
+                    </span>
 
-                <h3>{response.opportunityTitle}</h3>
-
-                <p>
-                  From{" "}
-                  <Link
-                    href={`/founders/${response.applicantId}`}
-                  >
-                    {response.applicantName}
-                  </Link>
-                </p>
-
-                <p className="opportunity-response-message">
-                  {response.message}
-                </p>
-
-                {response.status === "Pending" && (
-                  <div className="opportunity-review-actions">
-                    <form action={reviewOpportunityResponse}>
-                      <input
-                        type="hidden"
-                        name="responseId"
-                        value={response.id}
-                      />
-                      <input
-                        type="hidden"
-                        name="decision"
-                        value="Accepted"
-                      />
-                      <button
-                        type="submit"
-                        className="opportunity-accept-button"
-                      >
-                        Accept Interest
-                      </button>
-                    </form>
-
-                    <form action={reviewOpportunityResponse}>
-                      <input
-                        type="hidden"
-                        name="responseId"
-                        value={response.id}
-                      />
-                      <input
-                        type="hidden"
-                        name="decision"
-                        value="Declined"
-                      />
-                      <button
-                        type="submit"
-                        className="opportunity-decline-button"
-                      >
-                        Decline
-                      </button>
-                    </form>
+                    <span
+                      className={`interest-status interest-status-${response.status.toLowerCase()}`}
+                    >
+                      {response.status}
+                    </span>
                   </div>
-                )}
-              </article>
-            ))}
+
+                  <h3>
+                    <Link
+                      href={`/opportunities/${response.opportunityId}`}
+                    >
+                      {response.opportunityTitle}
+                    </Link>
+                  </h3>
+
+                  <p>
+                    From{" "}
+                    <Link
+                      href={`/founders/${response.applicantId}`}
+                    >
+                      {response.applicantName}
+                    </Link>
+                  </p>
+
+                  <p className="opportunity-response-message">
+                    {response.message}
+                  </p>
+
+                  {acceptedCount > 0 && (
+                    <p className="opportunity-accepted-note">
+                      You've already accepted{" "}
+                      {acceptedCount}{" "}
+                      {acceptedCount === 1
+                        ? "founder"
+                        : "founders"}{" "}
+                      for this opportunity.
+                    </p>
+                  )}
+
+                  {response.status === "Pending" && (
+                    <OpportunityReviewActions
+                      responseId={response.id}
+                    />
+                  )}
+
+                  {response.status === "Accepted" && (
+                    <ConnectedContactButton
+                      founderId={response.applicantId}
+                    />
+                  )}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
@@ -159,15 +167,15 @@ export default async function OpportunityResponsesPage() {
 
         {sent.length === 0 ? (
           <div className="opportunity-empty">
-            You haven't expressed interest in any
-            opportunities yet.
+            You haven't expressed interest in
+            any opportunities yet.
           </div>
         ) : (
           <div className="opportunity-response-list">
             {sent.map((response) => (
               <article
-                className="opportunity-response-card"
                 key={response.id}
+                className="opportunity-response-card"
               >
                 <div className="opportunity-card-top">
                   <span className="opportunity-type">
@@ -194,11 +202,17 @@ export default async function OpportunityResponsesPage() {
                 </p>
 
                 {response.status === "Accepted" && (
-                  <p className="opportunity-accepted-note">
-                    Your interest was accepted! Visit
-                    the opportunity and connect with
-                    its founder to continue the conversation.
-                  </p>
+                  <>
+                    <p className="opportunity-accepted-note">
+                      🎉 Your interest was accepted!
+                      You're now connected with the
+                      opportunity founder.
+                    </p>
+
+                    <ConnectedContactButton
+                      founderId={response.opportunityOwnerId}
+                    />
+                  </>
                 )}
               </article>
             ))}

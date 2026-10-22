@@ -3,67 +3,103 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { respondToConnectionRequest } from "@/app/connections/actions";
+
+import {
+  respondToConnectionRequest,
+} from "@/app/connections/actions";
+
+import ContactPopup from "@/components/ContactPopup";
 
 type Props = {
   requestId: string;
+  otherFounderId: string;
 };
 
 export default function ConnectionRequestActions({
   requestId,
+  otherFounderId,
 }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [feedback, setFeedback] = useState("");
 
-  function handleDecision(decision: "Accepted" | "Declined") {
+  const [isPending, startTransition] =
+    useTransition();
+
+  const [feedback, setFeedback] = useState("");
+  const [showContact, setShowContact] = useState(false);
+
+  function handleDecision(
+    decision: "Accepted" | "Declined"
+  ) {
     setFeedback("");
 
     startTransition(async () => {
       try {
-        const result = await respondToConnectionRequest(
-          requestId,
-          decision
-        );
+        const result =
+          await respondToConnectionRequest(
+            requestId,
+            decision
+          );
 
         setFeedback(result.message);
 
         if (result.success) {
+          if (decision === "Accepted") {
+            setShowContact(true);
+          }
+
           router.refresh();
         }
       } catch {
-        setFeedback("Something went wrong. Please try again.");
+        setFeedback(
+          "Something went wrong. Please try again."
+        );
       }
     });
   }
 
   return (
-    <div className="connection-request-actions">
-      <div className="connection-request-buttons">
-        <button
-          type="button"
-          className="connection-accept-button"
-          disabled={isPending}
-          onClick={() => handleDecision("Accepted")}
-        >
-          {isPending ? "Saving..." : "Accept"}
-        </button>
+    <>
+      <div className="connection-request-actions">
+        <div className="connection-request-buttons">
+          <button
+            type="button"
+            className="connection-accept-button"
+            disabled={isPending}
+            onClick={() =>
+              handleDecision("Accepted")
+            }
+          >
+            {isPending ? "Saving..." : "Accept"}
+          </button>
 
-        <button
-          type="button"
-          className="connection-decline-button"
-          disabled={isPending}
-          onClick={() => handleDecision("Declined")}
-        >
-          Decline
-        </button>
+          <button
+            type="button"
+            className="connection-decline-button"
+            disabled={isPending}
+            onClick={() =>
+              handleDecision("Declined")
+            }
+          >
+            Decline
+          </button>
+        </div>
+
+        {feedback && (
+          <p
+            role="status"
+            className="connection-feedback"
+          >
+            {feedback}
+          </p>
+        )}
       </div>
 
-      {feedback && (
-        <p role="status" className="connection-feedback">
-          {feedback}
-        </p>
+      {showContact && (
+        <ContactPopup
+          founderId={otherFounderId}
+          onClose={() => setShowContact(false)}
+        />
       )}
-    </div>
+    </>
   );
 }

@@ -198,6 +198,7 @@ export default async function ConnectionsPage() {
                     {request.status === "Pending" && (
                       <ConnectionRequestActions
                         requestId={request.id}
+                        otherFounderId={request.fromFounderId}
                       />
                     )}
                   </div>

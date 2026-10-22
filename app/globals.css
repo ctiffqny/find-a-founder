@@ -1965,3 +1965,112 @@
   text-decoration: none;
   white-space: nowrap;
 }
+
+
+/* ========================================
+   FOUNDER CONTACT POPUPS
+   ======================================== */
+
+.founder-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 15, 15, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.founder-modal {
+  position: relative;
+  width: 100%;
+  max-width: 510px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  color: #222;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.22);
+}
+
+.founder-modal h2 {
+  font-size: 26px;
+  margin: 0 35px 14px 0;
+}
+
+.founder-modal h3 {
+  font-size: 19px;
+  margin: 24px 0 10px;
+}
+
+.founder-modal p {
+  color: #555;
+  line-height: 1.6;
+}
+
+.founder-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.founder-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  margin: 24px 0;
+  border-radius: 12px;
+  background: #f7f7f7;
+}
+
+.founder-contact-list > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.founder-contact-list strong {
+  width: 100%;
+  font-size: 12px;
+  color: #666;
+}
+
+.founder-contact-list a {
+  color: #990000;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.founder-contact-list button {
+  margin-left: auto;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 7px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.founder-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .founder-modal {
+    padding: 24px 20px;
+  }
+
+  .founder-modal-actions > button {
+    flex: 1;
+  }
+}

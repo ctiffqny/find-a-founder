@@ -22,6 +22,10 @@ import {
 type Props = {
   founder: EditableFounderProfile;
   profilePhoto: string | null;
+  phonePreferences: {
+    phone: string;
+    sharePhone: boolean;
+  };
 };
 
 const initialState: EditProfileState = {
@@ -32,6 +36,7 @@ const initialState: EditProfileState = {
 export default function EditProfileForm({
   founder,
   profilePhoto,
+  phonePreferences,
 }: Props) {
   const [state, formAction, isPending] = useActionState(
     saveFounderProfile,
@@ -379,6 +384,45 @@ export default function EditProfileForm({
           ))}
         </select>
       </label>
+
+      <fieldset>
+        <legend>Contact Information</legend>
+
+        <p className="form-help">
+            Your phone number is optional and never shown
+            on your public founder profile.
+        </p>
+
+        <label>
+            Phone number (optional)
+            <input
+            type="tel"
+            name="phone"
+            defaultValue={phonePreferences.phone}
+            placeholder="+1 (213) 555-0123"
+            maxLength={25}
+            autoComplete="tel"
+            />
+        </label>
+
+        <label
+            style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 14,
+            }}
+        >
+            <input
+            type="checkbox"
+            name="sharePhone"
+            defaultChecked={phonePreferences.sharePhone}
+            style={{ width: "auto" }}
+            />
+
+            Share my phone number with accepted connections
+        </label>
+        </fieldset>
 
       {/* Private professional links */}
       <fieldset>
